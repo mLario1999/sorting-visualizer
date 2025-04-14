@@ -10,7 +10,12 @@ project(SortingVisualizer
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-add_executable(SortingVisualizer main.cpp)
+add_executable(SortingVisualizer 
+    main.cpp
+    stepwise_sorting.cpp
+)
+
+set(CMAKE_PREFIX_PATH "C:/Dev/Libraries/")
 
 set(SDL3_DLL ${CMAKE_PREFIX_PATH}/SDL3/lib/x64/SDL3.dll)
 

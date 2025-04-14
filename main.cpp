@@ -1,47 +1,6 @@
-#include <iostream>
 #include <SDL3/SDL.h>
-#include <Windows.h>
-
-struct BubbleSortState
-{
-    bool sorted;
-    int currentOuter;
-    int currentInner;
-    int swappedLeft;
-    int swappedRight;
-};
-
-bool StepBubbleSort(BubbleSortState* state, int* list, int listSize)
-{
-    state->swappedLeft = -1;
-    state->swappedRight = -1;
-     if (!state->sorted)
-        {
-            
-            if (state->currentInner < listSize - state->currentOuter - 1)
-            {
-                if (list[state->currentInner] > list[state->currentInner+1])
-                {
-                    std::swap(list[state->currentInner], list[state->currentInner+1]);
-                    state->swappedLeft = state->currentInner;
-                    state->swappedRight = state->currentInner + 1;
-                }
-                state->currentInner++;
-            }
-            else 
-            {
-                state->currentInner = 0;
-                state->currentOuter++;
-                if (state->currentOuter >= listSize-1)
-                {
-                    state->sorted = true;
-                }
-                state->swappedLeft = -1;
-                state->swappedRight = -1;
-            }
-        }
-    return state->sorted ? false : true;    
-}
+#include "core.h"
+#include "stepwise_sorting.h"
 
 void RenderSort(SDL_Renderer* renderer, int swappedLeft, int swappedRight, int* list, int listSize, int maxValue, int windowWidth, int windowHeight, float spacing)
 {
@@ -138,8 +97,11 @@ int main(int argc, char* argv[])
         SDL_Log("Could not create renderer: %s", SDL_GetError());
         return -1;
     }
+    SortState sortState = {};
+    ResolveSortTypeFromArg(&sortState, argv[1]);
+    assert(sortState.type);
 
-    const int number_count = StringToUInt32(argv[1]);
+    const int number_count = StringToUInt32(argv[2]);
     int maxValue = 0;
     int* numbers = (int*) std::malloc(number_count*sizeof(int));
         for (int i = 0; i < number_count; i++)
@@ -149,10 +111,7 @@ int main(int argc, char* argv[])
             {
                 maxValue = numbers[i];
             }
-        }
-    BubbleSortState sortState = {};
-    sortState.swappedLeft = -1;
-    sortState.swappedRight = -1;        
+        }  
     bool running = true;
     int sortCompletedStepValue = 0;
     int* sortCompletedStep = &sortCompletedStepValue;
@@ -176,14 +135,14 @@ int main(int argc, char* argv[])
 
         if (!sortState.sorted)
         {
-            StepBubbleSort(&sortState, numbers, number_count);
+            StepSort(&sortState, numbers, number_count);
             RenderSort(renderer, sortState.swappedLeft, sortState.swappedRight, numbers, number_count, maxValue, windowWidth, windowHeight, 2.0f);
-            SDL_Delay(1);
+            SDL_Delay(50);
         }
         else
         {
             RenderSortCompleted(renderer, numbers, number_count, maxValue, windowWidth, windowHeight, 2.0f, sortCompletedStep);
-            SDL_Delay(5);
+            SDL_Delay(25);
         }
         SDL_RenderPresent(renderer);
     }
