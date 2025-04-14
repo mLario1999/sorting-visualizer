@@ -1,0 +1,27 @@
+cmake_minimum_required(VERSION 3.15)
+
+set(CMAKE_CXX_STANDARD 17)
+
+project(SortingVisualizer
+    VERSION 1.0
+    LANGUAGES C CXX
+)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+add_executable(SortingVisualizer main.cpp)
+
+set(CMAKE_PREFIX_PATH "C:/Dev/Libraries/")
+
+set(SDL3_DLL ${CMAKE_PREFIX_PATH}/SDL3/lib/x64/SDL3.dll)
+
+find_package(SDL3 REQUIRED CONFIG)
+
+target_link_libraries(SortingVisualizer SDL3::SDL3)
+
+add_custom_command(TARGET SortingVisualizer POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    ${SDL3_DLL}
+    $<TARGET_FILE_DIR:SortingVisualizer>
+)
